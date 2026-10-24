@@ -6,3 +6,12 @@
 *~
 .vscode/
 .idea/
+
+# Node.js dependencies
+node_modules/
+
+# Generated HTML output
+out/
+
+# Local npm package archives
+*.tgz
