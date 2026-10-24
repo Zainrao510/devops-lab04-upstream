@@ -3,12 +3,14 @@ OUT_DIR := out
 SOURCES := $(wildcard $(SRC_DIR)/*.md)
 OUTPUTS := $(patsubst $(SRC_DIR)/%.md,$(OUT_DIR)/%.html,$(SOURCES))
 
-.PHONY: all deps check build test clean ci
+.PHONY: all deps check build test package clean ci
 
 all: ci
 
-deps:
+node_modules: package.json package-lock.json
 	npm ci
+
+deps: node_modules
 
 check:
 	@test -d "$(SRC_DIR)" || (echo "CHECK FAILED: source directory missing"; exit 1)
@@ -27,7 +29,11 @@ build: $(OUTPUTS)
 test: build
 	npm test
 
-clean:
-	rm -rf $(OUT_DIR)
+package: test
+	npm pack
+	@echo "PACKAGE CREATED"
 
-ci: deps clean check test
+clean:
+	rm -rf $(OUT_DIR) *.tgz
+
+ci: clean deps check test package
